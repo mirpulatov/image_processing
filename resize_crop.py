@@ -5,15 +5,20 @@ from PIL import Image
 class ResizeCrop:
     _width = None
     _height = None
-    _filename = None
+    _image = None
 
-    def __init__(self, width, height, filename):
+    def __init__(self, image, width=500, height=None):
+        """
+        @param width - image width size, default value for all images is 500
+        @param height - image height, height is empty if width is given by default value 
+        @param image - a file object passed directly from the request view
+        """
         self._width = width
         self._height = height
-        self._filename = filename
+        self._image = image
 
     def resize(self):
-        img = Image.open(self._filename)
+        img = Image.open(self._image)
         wpercent = (self._width / float(img.size[0]))
         hsize = int((float(img.size[1]) * float(wpercent)))
         img = img.resize((self._width, hsize), Image.ANTIALIAS)
