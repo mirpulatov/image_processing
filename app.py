@@ -20,7 +20,7 @@ def upload():
         filename = photos.save(request.files['photo'])
         filename = 'uploads/' + str(filename)
         file_id = str(uuid.uuid4()).replace('-', '')
-        img = resize_crop.ResizeCrop(width=500, filename=filename, height=None)
+        img = resize_crop.ResizeCrop(filename=filename)
         path = img.resize()
         os.remove(filename)
         return jsonify({'path': path, 'id': file_id, 'status': 'active'}), 201
@@ -33,14 +33,15 @@ def get_photo(image_id):
     height = request.args.get('height', type=int)
     img = resize_crop.ResizeCrop(width=width, height=height, filename='uploads/' + str(image_id))
     if width is None and height is None:
-        return jsonify({'path': image_id}), 201
+        return jsonify({'path': image_id}), 200 ## In GET request 200 is more correct response code rather than 201
+                                                ## 201 code is used only if something created via POST or PUT methods
     elif width >= 500:
-        return jsonify({'path': image_id}), 201
+        return jsonify({'path': image_id}), 200
     elif width < 500:
         res_file = img.resize()
         new_file = img.crop(res_file)
         os.remove(res_file)
-        return jsonify({'path:': new_file}), 201
+        return jsonify({'path:': new_file}), 200
     else:
         return 'Error!'
 
